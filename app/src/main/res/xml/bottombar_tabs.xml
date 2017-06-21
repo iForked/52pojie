@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+    <tab
+        icon="@mipmap/tab_home"
+        id="@+id/tab_home"
+        title="首页" />
+    <tab
+
+        icon="@mipmap/tab_explore"
+        id="@+id/tab_explore"
+        title="版块" />
+    <tab
+        icon="@mipmap/tab_profile"
+        id="@+id/tab_profile"
+        title="我" />
+</tabs>
