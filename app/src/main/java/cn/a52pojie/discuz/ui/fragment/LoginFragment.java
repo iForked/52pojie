@@ -21,13 +21,12 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
-import org.reactivestreams.Subscriber;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.a52pojie.discuz.R;
 import cn.a52pojie.discuz.bean.LoginBean;
 import cn.a52pojie.discuz.net.HttpHelper;
+import es.dmoral.toasty.Toasty;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
@@ -126,7 +125,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                     return;
                 if (!s.toString().matches("[A-Za-z0-9?!@#$%^&*()-,:;+_=.~`/><|\\?]+")) {
                     String temp = s.toString();
-                    Toast.makeText(getActivity(), R.string.please_input_limit_pwd, Toast.LENGTH_SHORT).show();
+                    Toasty.info(getActivity(), getString(R.string.please_input_limit_pwd), Toast.LENGTH_SHORT).show();
                     s.delete(temp.length() - 1, temp.length());
                     et_password.setSelection(s.length());
                 }
@@ -231,13 +230,19 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                     et_password.setSelection(pwd.length());
                 break;
             case R.id.btn_login:
-                loginNow(et_mobile.getText().toString(), et_password.getText().toString());
+                String username = et_mobile.getText().toString();
+                String password = et_password.getText().toString();
+                if (username.isEmpty() || password.isEmpty()) {
+                    Toasty.info(getActivity(), "请输入账号和密码", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                loginNow(username, password);
                 break;
         }
     }
 
     private void loginNow(String username, String password) {
-        Log.e("qtfreet00","login now");
+        Log.e("qtfreet00", "login now");
         HttpHelper.getInstance().newHttp.login("utf-8", username, password)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -250,19 +255,20 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onNext(@NonNull LoginBean loginBean) {
                         if (loginBean == null) {
-                            Toast.makeText(getActivity(), "登录异常", Toast.LENGTH_SHORT).show();
+                            Toasty.error(getActivity(), "登录异常", Toast.LENGTH_SHORT).show();
                             return;
                         }
                         if (!loginBean.getMessage().getMessageval().equals("login_succeed")) {
-                            Toast.makeText(getActivity(), "登录失败", Toast.LENGTH_SHORT).show();
+                            Toasty.error(getActivity(), "登录失败", Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        Toast.makeText(getActivity(), loginBean.getMessage().getMessagestr(), Toast.LENGTH_SHORT).show();
+
+                        Toasty.success(getActivity(), loginBean.getMessage().getMessagestr(), Toast.LENGTH_SHORT, true).show();
                     }
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        Toast.makeText(getActivity(), "网络连接异常", Toast.LENGTH_SHORT).show();
+                        Toasty.warning(getActivity(), "网络连接异常", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements OnTabSelectListen
         switch (tabId) {
             case R.id.tab_home:
                 ob = new IndexFragment();
+                fab.setVisibility(View.VISIBLE);
                 break;
             case R.id.tab_explore:
                 return;

@@ -17,17 +17,14 @@ import butterknife.ButterKnife;
 import cn.a52pojie.discuz.R;
 import cn.a52pojie.discuz.bean.IndexBean;
 import cn.a52pojie.discuz.bean.ThreadSimpleBean;
-import cn.a52pojie.discuz.net.ApiService;
 import cn.a52pojie.discuz.net.HttpHelper;
 import cn.a52pojie.discuz.ui.adapter.ThreadAdapter;
+import es.dmoral.toasty.Toasty;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -73,7 +70,7 @@ public class IndexFragment extends Fragment {
                     @Override
                     public void onNext(@NonNull IndexBean indexBean) {
                         if (indexBean == null) {
-                            Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
+                            Toasty.warning(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
                             return;
                         }
                         List<IndexBean.VariablesBean.DataBean> data = indexBean.getVariables().getData();
@@ -93,7 +90,7 @@ public class IndexFragment extends Fragment {
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
+                        Toasty.warning(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
