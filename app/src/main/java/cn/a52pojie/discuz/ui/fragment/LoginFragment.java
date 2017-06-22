@@ -14,11 +14,14 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import butterknife.BindView;
@@ -27,6 +30,7 @@ import cn.a52pojie.discuz.R;
 import cn.a52pojie.discuz.bean.LoginBean;
 import cn.a52pojie.discuz.net.HttpHelper;
 import es.dmoral.toasty.Toasty;
+import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
@@ -36,7 +40,7 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class LoginFragment extends Fragment implements View.OnClickListener {
+public class LoginFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     @BindView(R.id.logo)
     ImageView logo;
     @BindView(R.id.scrollView)
@@ -57,8 +61,15 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     View service;
     @BindView(R.id.root)
     RelativeLayout root;
+    @BindView(R.id.et_question)
+    Spinner et_question;
+    @BindView(R.id.et_answer)
+    EditText et_answer;
+    @BindView(R.id.display_question)
+    LinearLayout display;
     private int keyHeight = 0; //软件盘弹起后所占高度
     private float scale = 0.6f; //logo缩放比例
+    private int questionId = 0;
 
     public LoginFragment() {
     }
@@ -83,7 +94,28 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         clean_password.setOnClickListener(this);
         iv_show_pwd.setOnClickListener(this);
         btn_login.setOnClickListener(this);
+        et_question.setOnItemSelectedListener(this);
         et_mobile.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!TextUtils.isEmpty(s) && iv_clean_phone.getVisibility() == View.GONE) {
+                    iv_clean_phone.setVisibility(View.VISIBLE);
+                } else if (TextUtils.isEmpty(s)) {
+                    iv_clean_phone.setVisibility(View.GONE);
+                }
+            }
+        });
+        et_answer.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -214,6 +246,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
             case R.id.iv_clean_phone:
                 et_mobile.setText("");
                 break;
+            case R.id.clean_answer:
+                et_answer.setText("");
+                break;
             case R.id.clean_password:
                 et_password.setText("");
                 break;
@@ -243,8 +278,18 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
     private void loginNow(String username, String password) {
         Log.e("qtfreet00", "login now");
-        HttpHelper.getInstance().newHttp.login("utf-8", username, password)
-                .subscribeOn(Schedulers.io())
+        Observable<LoginBean> login;
+        if (questionId == 0) {
+            login = HttpHelper.getInstance().newHttp.login("utf-8", username, password);
+        } else {
+            String answer = et_answer.getText().toString();
+            if (answer.isEmpty()) {
+                Toasty.warning(getActivity(), "请输入安全问题", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            login = HttpHelper.getInstance().newHttp.loginWithQuestion(questionId, "utf-8", username, password, answer);
+        }
+        login.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<LoginBean>() {
                     @Override
@@ -276,5 +321,21 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
                     }
                 });
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        if (i != 0) {
+            display.setVisibility(View.VISIBLE);
+            questionId = i;
+        } else {
+            questionId = 0;
+            display.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+        display.setVisibility(View.GONE);
     }
 }

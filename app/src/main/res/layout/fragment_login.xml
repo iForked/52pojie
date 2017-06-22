@@ -14,7 +14,7 @@
         android:layout_height="100dp"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="60dp"
         android:background="@null"
         android:scaleType="fitCenter"
         android:src="@mipmap/logo" />
@@ -75,6 +75,7 @@
                     android:visibility="gone" />
             </LinearLayout>
 
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"
@@ -123,6 +124,82 @@
                     android:layout_height="fill_parent"
                     android:scaleType="centerInside"
                     android:src="@mipmap/pass_gone" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/color_eeeeee" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingEnd="13dp"
+                android:paddingStart="13dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:src="@mipmap/ic_question_flag" />
+
+                <Spinner
+                    android:id="@+id/et_question"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:entries="@array/questions"
+                    android:textColor="@color/color_999999"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/color_eeeeee" />
+
+            <LinearLayout
+                android:id="@+id/display_question"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingEnd="13dp"
+                android:paddingStart="13dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:src="@mipmap/ic_question_flag" />
+
+                <EditText
+                    android:id="@+id/et_answer"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="请输入提示问题答案"
+                    android:maxLength="30"
+                    android:maxLines="1"
+                    android:text=""
+                    android:textColor="@color/color_999999"
+                    android:textColorHint="@color/color_999999"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/clean_answer"
+                    android:layout_width="40dp"
+                    android:layout_height="fill_parent"
+                    android:scaleType="centerInside"
+                    android:src="@mipmap/ic_clear"
+                    android:visibility="gone" />
+
             </LinearLayout>
 
             <View

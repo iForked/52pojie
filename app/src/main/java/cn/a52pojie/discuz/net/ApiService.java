@@ -22,6 +22,9 @@ public interface ApiService {
     @POST("/api/mobile/index.php?loginfield=auto&charset=utf-8&version=3&loginsubmit=yes&mobile=no&module=login")
     Observable<LoginBean> login(@Query("charset") String charset, @Query("username") String username, @Query("password") String password);
 
+    @POST("/api/mobile/index.php?loginfield=auto&charset=utf-8&version=3&loginsubmit=yes&mobile=no&module=login")
+    Observable<LoginBean> loginWithQuestion(@Query("questionid") int id, @Query("charset") String charset, @Query("username") String username, @Query("password") String password, @Query("answer") String answer);
+
     @GET("/api/mobile/index.php?charset=utf-8&version=3&mobile=no&module=forumindex")
     Observable<ForumTitleBean> getForum();
 }
