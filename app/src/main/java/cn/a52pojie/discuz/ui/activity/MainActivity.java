@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
@@ -21,6 +22,8 @@ import cn.a52pojie.discuz.R;
 import cn.a52pojie.discuz.ui.fragment.ForumFragment;
 import cn.a52pojie.discuz.ui.fragment.IndexFragment;
 import cn.a52pojie.discuz.ui.fragment.LoginFragment;
+import cn.a52pojie.discuz.util.LoginUtil;
+import es.dmoral.toasty.Toasty;
 
 public class MainActivity extends AppCompatActivity implements OnTabSelectListener {
     @BindView(R.id.bottomBar)
@@ -83,8 +86,13 @@ public class MainActivity extends AppCompatActivity implements OnTabSelectListen
                 fab.setVisibility(View.GONE);
                 break;
             case R.id.tab_profile:
-                ob = new LoginFragment();
-                fab.setVisibility(View.GONE);
+                if (!LoginUtil.checkLogin()) {
+                    ob = new LoginFragment();
+                    fab.setVisibility(View.GONE);
+                } else {
+                    Toasty.success(this,"你已经登录了", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 break;
 
         }

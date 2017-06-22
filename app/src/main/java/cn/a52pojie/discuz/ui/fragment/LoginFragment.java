@@ -29,6 +29,7 @@ import butterknife.ButterKnife;
 import cn.a52pojie.discuz.R;
 import cn.a52pojie.discuz.bean.LoginBean;
 import cn.a52pojie.discuz.net.HttpHelper;
+import cn.a52pojie.discuz.util.LoginUtil;
 import es.dmoral.toasty.Toasty;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -179,7 +180,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Ada
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            scrollView.smoothScrollTo(0, scrollView.getHeight());
+                            scrollView.smoothScrollTo(0, scrollView.getHeight()/2);
                         }
                     }, 0);
                     zoomIn(logo, (oldBottom - bottom) - keyHeight);
@@ -190,7 +191,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Ada
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            scrollView.smoothScrollTo(0, scrollView.getHeight());
+                            scrollView.smoothScrollTo(0, scrollView.getHeight()/2);
                         }
                     }, 0);
                     zoomOut(logo, (bottom - oldBottom) - keyHeight);
@@ -307,7 +308,11 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Ada
                             Toasty.error(getActivity(), "登录失败", Toast.LENGTH_SHORT).show();
                             return;
                         }
-
+                        String cookie = loginBean.getVariables().getAuth();
+                        String cookie_key = loginBean.getVariables().getCookiepre();
+                        String saltKey = loginBean.getVariables().getSaltkey();
+                        String uid = loginBean.getVariables().getMember_uid();
+                        LoginUtil.save(saltKey, cookie, uid, cookie_key);
                         Toasty.success(getActivity(), loginBean.getMessage().getMessagestr(), Toast.LENGTH_SHORT, true).show();
                     }
 
