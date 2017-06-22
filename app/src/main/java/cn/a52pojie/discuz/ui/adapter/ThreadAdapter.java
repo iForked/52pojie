@@ -23,10 +23,19 @@ import cn.a52pojie.discuz.bean.ThreadSimpleBean;
 public class ThreadAdapter extends BaseAdapter {
     private List<ThreadSimpleBean> mData;
     private Context ctx;
+    private onThreadClick mListener;
 
     public ThreadAdapter(Context ctx, List<ThreadSimpleBean> data) {
         this.ctx = ctx;
         this.mData = data;
+    }
+
+    public void setOnThreadClickListener(onThreadClick clickListener) {
+        this.mListener = clickListener;
+    }
+
+    public interface onThreadClick {
+        void onItemClick(String tid);
     }
 
     @Override
@@ -46,7 +55,7 @@ public class ThreadAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View convertView, ViewGroup parent) {
-        ThreadSimpleBean bean = mData.get(i);
+        final ThreadSimpleBean bean = mData.get(i);
         ViewHolder holder;
         if (convertView == null) {
             convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_thread, parent, false);
@@ -62,6 +71,12 @@ public class ThreadAdapter extends BaseAdapter {
         if (bean.isPicture()) {
             holder.isPicture.setVisibility(View.VISIBLE);
         }
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onItemClick(bean.getTid());
+            }
+        });
         return convertView;
     }
 

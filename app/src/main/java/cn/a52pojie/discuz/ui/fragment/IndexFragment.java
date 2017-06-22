@@ -1,5 +1,6 @@
 package cn.a52pojie.discuz.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,6 +19,7 @@ import cn.a52pojie.discuz.R;
 import cn.a52pojie.discuz.bean.IndexBean;
 import cn.a52pojie.discuz.bean.ThreadSimpleBean;
 import cn.a52pojie.discuz.net.HttpHelper;
+import cn.a52pojie.discuz.ui.activity.ThreadDetailActivity;
 import cn.a52pojie.discuz.ui.adapter.ThreadAdapter;
 import es.dmoral.toasty.Toasty;
 import io.reactivex.Observer;
@@ -29,7 +31,7 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class IndexFragment extends Fragment {
+public class IndexFragment extends Fragment implements ThreadAdapter.onThreadClick {
     private ThreadAdapter threadAdapter;
     private List<ThreadSimpleBean> threads = new ArrayList<>();
     @BindView(R.id.lv_thread_list)
@@ -45,7 +47,7 @@ public class IndexFragment extends Fragment {
         ButterKnife.bind(this, view);
         this.threadAdapter = new ThreadAdapter(getContext(), threads);
         lvThread.setAdapter(threadAdapter);
-
+        threadAdapter.setOnThreadClickListener(this);
         return view;
     }
 
@@ -83,6 +85,7 @@ public class IndexFragment extends Fragment {
                             bean.setTime(dataBean.getDateline());
                             bean.setPicture(!dataBean.getRecommendicon().isEmpty());
                             bean.setComments(dataBean.getReplies());
+                            bean.setTid(dataBean.getTid());
                             threads.add(bean);
                         }
                         threadAdapter.notifyDataSetChanged();
@@ -98,5 +101,12 @@ public class IndexFragment extends Fragment {
 
                     }
                 });
+    }
+
+    @Override
+    public void onItemClick(String tid) {
+        Intent intent = new Intent(getActivity(), ThreadDetailActivity.class);
+        intent.putExtra("tid", tid);
+        startActivity(intent);
     }
 }

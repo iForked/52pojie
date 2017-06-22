@@ -11,6 +11,16 @@ public class ThreadSimpleBean {
     private String comments;
     private boolean picture;
 
+    public String getTid() {
+        return tid;
+    }
+
+    public void setTid(String tid) {
+        this.tid = tid;
+    }
+
+    private String tid;
+
     public String getTitle() {
         return Title;
     }
