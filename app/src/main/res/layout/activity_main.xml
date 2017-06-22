@@ -23,8 +23,10 @@
     <com.roughike.bottombar.BottomBar
         android:id="@+id/bottomBar"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="55dp"
+        android:gravity="center"
         android:layout_gravity="bottom"
+        app:bb_behavior="shy"
         app:bb_tabXmlResource="@xml/bottombar_tabs" />
 
     <android.support.design.widget.FloatingActionButton
@@ -33,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="80dp"
-        android:layout_marginRight="@dimen/fab_margin"
+        android:layout_marginEnd="@dimen/fab_margin"
         app:srcCompat="@android:drawable/stat_notify_sync_noanim" />
 
     <FrameLayout
