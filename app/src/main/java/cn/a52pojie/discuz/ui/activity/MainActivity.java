@@ -18,6 +18,7 @@ import com.roughike.bottombar.OnTabSelectListener;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.a52pojie.discuz.R;
+import cn.a52pojie.discuz.ui.fragment.ForumFragment;
 import cn.a52pojie.discuz.ui.fragment.IndexFragment;
 import cn.a52pojie.discuz.ui.fragment.LoginFragment;
 
@@ -78,7 +79,9 @@ public class MainActivity extends AppCompatActivity implements OnTabSelectListen
                 fab.setVisibility(View.VISIBLE);
                 break;
             case R.id.tab_explore:
-                return;
+                ob = new ForumFragment();
+                fab.setVisibility(View.GONE);
+                break;
             case R.id.tab_profile:
                 ob = new LoginFragment();
                 fab.setVisibility(View.GONE);

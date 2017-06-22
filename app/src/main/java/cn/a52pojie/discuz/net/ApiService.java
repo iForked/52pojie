@@ -1,5 +1,6 @@
 package cn.a52pojie.discuz.net;
 
+import cn.a52pojie.discuz.bean.ForumTitleBean;
 import cn.a52pojie.discuz.bean.IndexBean;
 
 import cn.a52pojie.discuz.bean.LoginBean;
@@ -20,4 +21,7 @@ public interface ApiService {
 
     @POST("/api/mobile/index.php?loginfield=auto&charset=utf-8&version=3&loginsubmit=yes&mobile=no&module=login")
     Observable<LoginBean> login(@Query("charset") String charset, @Query("username") String username, @Query("password") String password);
+
+    @GET("/api/mobile/index.php?charset=utf-8&version=3&mobile=no&module=forumindex")
+    Observable<ForumTitleBean> getForum();
 }
