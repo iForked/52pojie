@@ -11,14 +11,14 @@ import cn.a52pojie.discuz.ui.activity.ThreadDetailActivity;
  * Created by qtfreet00 on 2017/6/22.
  */
 
-public class ThreadDetailJsInterface {
+public class TJsInterface {
 
-        private ThreadDetailActivity.ThreadDetailjsInterfaceHandler mHandler;
+        private ThreadDetailActivity.TjsInterfaceHandler mHandler;
         protected String mHtmlResult = "";
         private int mImageMode = 1;
-        protected WebView mWebView;
+        private WebView mWebView;
 
-        public ThreadDetailJsInterface(WebView webView, ThreadDetailActivity.ThreadDetailjsInterfaceHandler threadDetailjsInterfaceHandler) {
+        public TJsInterface(WebView webView, ThreadDetailActivity.TjsInterfaceHandler threadDetailjsInterfaceHandler) {
             this.mWebView = webView;
             this.mHandler = threadDetailjsInterfaceHandler;
         }

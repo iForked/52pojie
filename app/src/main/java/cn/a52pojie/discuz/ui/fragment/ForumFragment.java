@@ -19,7 +19,7 @@ import cn.a52pojie.discuz.bean.ForumGroup;
 import cn.a52pojie.discuz.bean.ForumItem;
 import cn.a52pojie.discuz.bean.ForumTitleBean;
 import cn.a52pojie.discuz.net.HttpHelper;
-import cn.a52pojie.discuz.ui.adapter.ForumExpandableListAdapter;
+import cn.a52pojie.discuz.ui.adapter.ForumExpListAdapter;
 import es.dmoral.toasty.Toasty;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -32,7 +32,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class ForumFragment extends Fragment {
-    private ForumExpandableListAdapter adapter;
+    private ForumExpListAdapter adapter;
     private List<ForumGroup> gData = new ArrayList<>();
     private List<List<ForumItem>> iData = new ArrayList<>();
     @BindView(R.id.lv_forum_list)
@@ -46,7 +46,7 @@ public class ForumFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_forum, container, false);
         ButterKnife.bind(this, view);
-        this.adapter = new ForumExpandableListAdapter(gData, iData, getContext());
+        this.adapter = new ForumExpListAdapter(gData, iData, getContext());
         lvForum.setAdapter(adapter);
         return view;
     }
@@ -54,8 +54,12 @@ public class ForumFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getIndex();
+    }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getIndex();
     }
 
     private void getIndex() {

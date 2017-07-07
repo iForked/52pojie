@@ -19,7 +19,7 @@ import cn.a52pojie.discuz.bean.ForumItem;
  * Created by qtfreet00 on 2017/6/22.
  */
 
-public class ForumExpandableListAdapter extends BaseExpandableListAdapter {
+public class ForumExpListAdapter extends BaseExpandableListAdapter {
 
     private List<ForumGroup> gData;
     private List<List<ForumItem>> iData;
@@ -30,7 +30,7 @@ public class ForumExpandableListAdapter extends BaseExpandableListAdapter {
         return gData.size();
     }
 
-    public ForumExpandableListAdapter(List<ForumGroup> gData, List<List<ForumItem>> iData, Context mContext) {
+    public ForumExpListAdapter(List<ForumGroup> gData, List<List<ForumItem>> iData, Context mContext) {
         this.gData = gData;
         this.iData = iData;
         this.mContext = mContext;

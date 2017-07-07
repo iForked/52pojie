@@ -10,6 +10,11 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.scwang.smartrefresh.header.MaterialHeader;
+import com.scwang.smartrefresh.header.WaveSwipeHeader;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +41,8 @@ public class IndexFragment extends Fragment implements ThreadAdapter.onThreadCli
     private List<ThreadSimpleBean> threads = new ArrayList<>();
     @BindView(R.id.lv_thread_list)
     ListView lvThread;
+    @BindView(R.id.refreshLayout)
+    RefreshLayout refreshLayout;
 
     public IndexFragment() {
     }
@@ -54,8 +61,23 @@ public class IndexFragment extends Fragment implements ThreadAdapter.onThreadCli
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getIndex();
+    }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getIndex();
+        setRefresh();
+    }
+
+    private void setRefresh() {
+        refreshLayout.setRefreshHeader(new MaterialHeader(getContext()));
+        refreshLayout.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(RefreshLayout refreshlayout) {
+                getIndex();
+            }
+        });
     }
 
     private void getIndex() {
@@ -73,6 +95,7 @@ public class IndexFragment extends Fragment implements ThreadAdapter.onThreadCli
                     public void onNext(@NonNull IndexBean indexBean) {
                         if (indexBean == null) {
                             Toasty.warning(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
+                            refreshLayout.finishRefresh();
                             return;
                         }
                         List<IndexBean.VariablesBean.DataBean> data = indexBean.getVariables().getData();
@@ -89,11 +112,13 @@ public class IndexFragment extends Fragment implements ThreadAdapter.onThreadCli
                             threads.add(bean);
                         }
                         threadAdapter.notifyDataSetChanged();
+                        refreshLayout.finishRefresh();
                     }
 
                     @Override
                     public void onError(@NonNull Throwable e) {
                         Toasty.warning(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
+                        refreshLayout.finishRefresh();
                     }
 
                     @Override

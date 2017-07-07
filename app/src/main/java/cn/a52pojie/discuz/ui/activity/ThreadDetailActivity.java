@@ -2,6 +2,7 @@ package cn.a52pojie.discuz.ui.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,11 +11,12 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.github.nukc.stateview.StateView;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
@@ -23,7 +25,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.a52pojie.discuz.R;
 import cn.a52pojie.discuz.constant.Constant;
-import cn.a52pojie.discuz.js.ThreadDetailJsInterface;
+import cn.a52pojie.discuz.js.TJsInterface;
 import es.dmoral.toasty.Toasty;
 
 /**
@@ -37,8 +39,9 @@ public class ThreadDetailActivity extends AppCompatActivity implements View.OnCl
     FloatingActionButton fab;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    private ThreadDetailJsInterface mWebViewJsInterface;
-    private ThreadDetailjsInterfaceHandler mHandler;
+    private TJsInterface mWebViewJsInterface;
+    private TjsInterfaceHandler mHandler;
+    private StateView mStateView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,8 +51,13 @@ public class ThreadDetailActivity extends AppCompatActivity implements View.OnCl
         setSupportActionBar(toolbar);
         getWindow().setFormat(PixelFormat.TRANSLUCENT);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        initViews();
+        init();
+        initWebView();
         initListeners();
+    }
+
+    private void init() {
+        mStateView = StateView.inject(this);
     }
 
     private void initListeners() {
@@ -57,34 +65,30 @@ public class ThreadDetailActivity extends AppCompatActivity implements View.OnCl
     }
 
     @SuppressLint({"SetJavaScriptEnabled", "JavascriptInterface", "AddJavascriptInterface"})
-    private void initViews() {
+    private void initWebView() {
         try {
             Intent intent = getIntent();
             String tid = intent.getStringExtra("tid");
             final String url = String.format(Constant.FORUM_DETAIL_URL, tid);
-            Log.e("qtfreet00", url);
-            this.mHandler = new ThreadDetailjsInterfaceHandler(this);
-            this.mWebViewJsInterface = new ThreadDetailJsInterface(webView, this.mHandler);
+            this.mHandler = new TjsInterfaceHandler(this);
+            this.mWebViewJsInterface = new TJsInterface(webView, this.mHandler);
             WebSettings settings = webView.getSettings();
             settings.setBuiltInZoomControls(true);
             settings.setSupportZoom(true);
             settings.setJavaScriptEnabled(true);
             webView.setBackgroundColor(0);
-
             settings.setJavaScriptCanOpenWindowsAutomatically(false);
-            // webView.loadDataWithBaseURL(url, "<div style=\"height:100%; top:30%; position:relative;\" ><center><IMG src=\"file:///android_res/drawable/icon_loading_failed.png\" width=\"100\" /><br/><br/><div><font color=\"#666666\">网络连接不可用，请稍后重试</font></div></center></div>", "text/html", "utf-8", null);
             webView.loadUrl(url);
             webView.setWebViewClient(new WebViewClient() {
                                          @Override
-                                         public boolean shouldOverrideUrlLoading(WebView webView, String s) {
-                                             webView.loadUrl(url);
-                                             return true;
+                                         public void onPageStarted(WebView webView, String s, Bitmap bitmap) {
+                                             super.onPageStarted(webView, s, bitmap);
+                                             mStateView.showLoading();
                                          }
 
                                          @Override
                                          public void onPageFinished(WebView webView, String s) {
-                                             // Log.e("qtfreet00", webView.getContentDescription() + "");
-                                             // imgReset();
+                                             mStateView.setVisibility(View.GONE);
                                              super.onPageFinished(webView, s);
                                          }
                                      }
@@ -92,19 +96,20 @@ public class ThreadDetailActivity extends AppCompatActivity implements View.OnCl
             );
             webView.addJavascriptInterface(this.mWebViewJsInterface, "AppInterface");
         } catch (Exception e) {
-            Toasty.error(this, "加载页面出错了哦", Toast.LENGTH_SHORT).show();
+            mStateView.showRetry();
         }
     }
 
-    private void imgReset() {
-        webView.loadUrl("javascript:(function(){"
-                + "var objs = document.getElementsByTagName('img'); "
-                + "for(var i=0;i<objs.length;i++)  " + "{"
-                + "var img = objs[i];   "
-                + "    img.style.width = '100%';   "
-                + "    img.style.height = 'auto';   "
-                + "}" + "})()");
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK
+                && event.getRepeatCount() == 0) {
+            finish();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
+
 
     @Override
     public void onClick(View view) {
@@ -115,7 +120,7 @@ public class ThreadDetailActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    public static final class ThreadDetailjsInterfaceHandler extends Handler {
+    public static final class TjsInterfaceHandler extends Handler {
         public static final int NOTIFY_FORUM = 7;
         public static final int OPEN_AUDIO = 5;
         public static final int OPEN_GIF = 3;
@@ -127,7 +132,7 @@ public class ThreadDetailActivity extends AppCompatActivity implements View.OnCl
         public static final int VIEW_USER = 1;
         private ThreadDetailActivity mActivity;
 
-        public ThreadDetailjsInterfaceHandler(ThreadDetailActivity threadDetailActivity) {
+        public TjsInterfaceHandler(ThreadDetailActivity threadDetailActivity) {
             this.mActivity = threadDetailActivity;
         }
 
@@ -167,7 +172,7 @@ public class ThreadDetailActivity extends AppCompatActivity implements View.OnCl
 //                            }
 //
 //                            public void loginSuceess() {
-//                                ThreadDetailjsInterfaceHandler.this.mActivity.onLoadData();
+//                                TjsInterfaceHandler.this.mActivity.onLoadData();
 //                            }
 //                        };
 //                        Intent intent2 = new Intent();
