@@ -49,6 +49,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="15dp"
+
                     android:src="@mipmap/ic_mobile_flag" />
 
                 <EditText

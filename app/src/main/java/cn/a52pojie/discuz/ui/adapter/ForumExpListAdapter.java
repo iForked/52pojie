@@ -1,6 +1,8 @@
 package cn.a52pojie.discuz.ui.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,7 +98,21 @@ public class ForumExpListAdapter extends BaseExpandableListAdapter {
             itemHolder = (ViewHolderItem) convertView.getTag();
         }
         //itemHolder.img_icon.setImageResource(iData.get(groupPosition).get(childPosition).getiId());
-        itemHolder.tv_name.setText(iData.get(groupPosition).get(childPosition).getName());
+        ForumItem forumItem = iData.get(groupPosition).get(childPosition);
+        itemHolder.tv_name.setText(forumItem.getName());
+        String description = forumItem.getDescription();
+        if (description != null && !description.isEmpty()) {
+            Log.e("TAG", description);
+            if (description.startsWith("<font color=\"Red\">")) {
+                itemHolder.tv_name.setTextColor(Color.RED);
+            } else if (description.startsWith("<font color=\"Blue\">")) {
+                itemHolder.tv_name.setTextColor(Color.BLUE);
+            } else if (description.startsWith("<font color=\"Green\">")) {
+                itemHolder.tv_name.setTextColor(Color.rgb(31,122,31));
+            }
+        } else {
+            Log.e("TAG", "null");
+        }
         return convertView;
     }
 

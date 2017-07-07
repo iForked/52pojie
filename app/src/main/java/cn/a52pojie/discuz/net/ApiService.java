@@ -19,6 +19,9 @@ public interface ApiService {
     @GET("/api/mobile/index.php?charset=utf-8&version=3&mobile=no&module=hotthread")
     Observable<IndexBean> getIndex();
 
+    @GET("/api/mobile/index.php?charset=utf-8&version=3&mobile=no&module=hotthread")
+    Observable<IndexBean> loadMore(@Query("page") int i);
+
     @POST("/api/mobile/index.php?loginfield=auto&charset=utf-8&version=3&loginsubmit=yes&mobile=no&module=login")
     Observable<LoginBean> login(@Query("charset") String charset, @Query("username") String username, @Query("password") String password);
 

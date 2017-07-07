@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.scwang.smartrefresh.header.MaterialHeader;
 import com.scwang.smartrefresh.header.WaveSwipeHeader;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import cn.a52pojie.discuz.net.HttpHelper;
 import cn.a52pojie.discuz.ui.activity.ThreadDetailActivity;
 import cn.a52pojie.discuz.ui.adapter.ThreadAdapter;
 import es.dmoral.toasty.Toasty;
+import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
@@ -43,6 +45,7 @@ public class IndexFragment extends Fragment implements ThreadAdapter.onThreadCli
     ListView lvThread;
     @BindView(R.id.refreshLayout)
     RefreshLayout refreshLayout;
+    private int page = 1;
 
     public IndexFragment() {
     }
@@ -78,11 +81,29 @@ public class IndexFragment extends Fragment implements ThreadAdapter.onThreadCli
                 getIndex();
             }
         });
+        refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
+            @Override
+            public void onLoadmore(RefreshLayout refreshlayout) {
+                loadMore();
+            }
+        });
     }
 
     private void getIndex() {
-        HttpHelper.getInstance().newHttp.getIndex()
-                .subscribeOn(Schedulers.io())
+        threads.clear();
+        this.page = 1;
+        Observable<IndexBean> index = HttpHelper.getInstance().newHttp.getIndex();
+        startRequest(index);
+    }
+
+    private void loadMore() {
+        page += 1;
+        Observable<IndexBean> more = HttpHelper.getInstance().newHttp.loadMore(page);
+        startRequest(more);
+    }
+
+    private void startRequest(Observable<IndexBean> observable) {
+        observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<IndexBean>() {
 
@@ -99,9 +120,12 @@ public class IndexFragment extends Fragment implements ThreadAdapter.onThreadCli
                             return;
                         }
                         List<IndexBean.VariablesBean.DataBean> data = indexBean.getVariables().getData();
-                        int size = data.size();
-                        for (int i = 0; i < size; i++) {
-                            IndexBean.VariablesBean.DataBean dataBean = data.get(i);
+                        if (data == null) {
+                            Toasty.info(getActivity(), "没有更多数据了", Toast.LENGTH_SHORT).show();
+                            refreshLayout.finishLoadmore();
+                            return;
+                        }
+                        for (IndexBean.VariablesBean.DataBean dataBean : data) {
                             ThreadSimpleBean bean = new ThreadSimpleBean();
                             bean.setTitle(dataBean.getSubject());
                             bean.setAuthor(dataBean.getAuthor());
